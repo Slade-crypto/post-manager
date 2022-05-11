@@ -20,7 +20,7 @@ public class MySQLCompradorDAO implements CompradorDAO {
 		db.setString(1, comprador.getName());
 		db.setString(2, comprador.getAddress());
 		db.setString(3, comprador.getEmail());
-		db.setInt(4, '1');
+		db.setInt(4, 1);
 		  
 		return db.executeUpdate() > 0;
 	}
