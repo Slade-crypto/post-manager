@@ -8,12 +8,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Comprador;
 import model.ModelException;
-import model.User;
-import model.dao.DAOFactory;
-import model.dao.UserDAO;
 
-@WebServlet(urlPatterns = {"/users", "/user/form", "/user/delete", "/user/insert", "/user/update"})
+import model.dao.CompradorDAO;
+import model.dao.DAOFactory;
+
+
+@WebServlet(urlPatterns = {"/compradores", "/compradores/form", "/compradores/delete", "/compradores/insert", "/compradores/update"})
 public class CompradorController extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
@@ -23,26 +25,26 @@ public class CompradorController extends HttpServlet{
 		String action = req.getRequestURI();
 		
 		switch (action) {
-		case "/post-manager/user/form": {
-			listUsers(req);
+		case "/post-manager/compradores/form": {
+			listCompradores(req);
 			req.setAttribute("action", "insert");
-			ControllerUtil.forward(req, resp, "/form-user.jsp");
+			ControllerUtil.forward(req, resp, "/form-comprador.jsp");
 			break;
 		}
-		case "/post-manager/user/update": {
-			listUsers(req);
-			User user = loadUser(req);
-			req.setAttribute("user", user);
+		case "/post-manager/compradores/update": {
+			listCompradores(req);
+			Comprador comprador = loadComprador(req);
+			req.setAttribute("comprador", comprador);
 			req.setAttribute("action", "update");
-			ControllerUtil.forward(req, resp, "/form-user.jsp");
+			ControllerUtil.forward(req, resp, "/form-comprador.jsp");
 			break;
 		}
 		default:
-			listUsers(req);
+			listCompradores(req);
 			
 			ControllerUtil.transferSessionMessagesToRequest(req);
 		
-			ControllerUtil.forward(req, resp, "/users.jsp");
+			ControllerUtil.forward(req, resp, "/compradores.jsp");
 		}
 	}
 	
@@ -56,39 +58,39 @@ public class CompradorController extends HttpServlet{
 		}
 		
 		switch (action) {
-		case "/post-manager/user/delete":
-			deleteUser(req, resp);
+		case "/post-manager/compradores/delete":
+			deleteComprador(req, resp);
 			break;	
-		case "/post-manager/user/insert": {
-			insertUser(req, resp);
+		case "/post-manager/compradores/insert": {
+			insertComprador(req, resp);
 			break;
 		}
-		case "/post-manager/user/update": {
-			updateUser(req, resp);
+		case "/post-manager/compradores/update": {
+			updateComprador(req, resp);
 			break;
 		}
 		default:
-			System.out.println("URL inválida " + action);
+			System.out.println("URL invalida " + action);
 			break;
 		}
 			
-		ControllerUtil.redirect(resp, req.getContextPath() + "/users");
+		ControllerUtil.redirect(resp, req.getContextPath() + "/compradores");
 	}
 
-	private User loadUser(HttpServletRequest req) {
-		String userIdParameter = req.getParameter("userId");
+	private Comprador loadComprador(HttpServletRequest req) {
+		String compradorIdParameter = req.getParameter("compradorId");
 		
-		int userId = Integer.parseInt(userIdParameter);
+		int compradorId = Integer.parseInt(compradorIdParameter);
 		
-		UserDAO dao = DAOFactory.createDAO(UserDAO.class);
+		CompradorDAO dao = DAOFactory.createDAO(CompradorDAO.class);
 		
 		try {
-			User user = dao.findById(userId);
+			Comprador comprador = dao.findById(compradorId);
 			
-			if (user == null)
-				throw new ModelException("Usuário não encontrado para alteração");
+			if (comprador == null)
+				throw new ModelException("Usuario n�o encontrado para Altera��o");
 			
-			return user;
+			return comprador;
 		} catch (ModelException e) {
 			// log no servidor
 			e.printStackTrace();
@@ -98,39 +100,39 @@ public class CompradorController extends HttpServlet{
 		return null;
 	}
 	
-	private void listUsers(HttpServletRequest req) {
-		UserDAO dao = DAOFactory.createDAO(UserDAO.class);
+	private void listCompradores(HttpServletRequest req) {
+		CompradorDAO dao = DAOFactory.createDAO(CompradorDAO.class);
 		
-		List<User> users = null;
+		List<Comprador> compradores = null;
 		try {
-			users = dao.listAll();
+			compradores = dao.listAll();
 		} catch (ModelException e) {
 			// Log no servidor
 			e.printStackTrace();
 		}
 		
-		if (users != null)
-			req.setAttribute("users", users);
+		if (compradores != null)
+			req.setAttribute("compradores", compradores);
 	}
 	
-	private void insertUser(HttpServletRequest req, HttpServletResponse resp) {
-		String userName = req.getParameter("name");
-		String userGender = req.getParameter("gender");
-		String userEMail = req.getParameter("mail");
+	private void insertComprador(HttpServletRequest req, HttpServletResponse resp) {
+		String compradorName = req.getParameter("name");
+		String compradorAddress = req.getParameter("address");
+		String compradorEmail = req.getParameter("mail");
 		
-		User user = new User();
-		user.setName(userName);
-		user.setGender(userGender);
-		user.setEmail(userEMail);
+		Comprador comprador = new Comprador();
+		comprador.setName(compradorName);
+		comprador.setAddress(compradorAddress);
+		comprador.setEmail(compradorEmail);
 		
-		UserDAO dao = DAOFactory.createDAO(UserDAO.class);
+		CompradorDAO dao = DAOFactory.createDAO(CompradorDAO.class);
 		
 		try {
-			if (dao.save(user)) {
-				ControllerUtil.sucessMessage(req, "Usuário '" + user.getName() + "' salvo com sucesso.");
+			if (dao.save(comprador)) {
+				ControllerUtil.sucessMessage(req, "Usuario '" + comprador.getName() + "' salvo com sucesso.");
 			}
 			else {
-				ControllerUtil.errorMessage(req, "Usuário '" + user.getName() + "' não pode ser salvo.");
+				ControllerUtil.errorMessage(req, "Usuario '" + comprador.getName() + "' n�o pode ser salvo.");
 			}
 				
 		} catch (ModelException e) {
@@ -140,24 +142,24 @@ public class CompradorController extends HttpServlet{
 		}
 	}
 	
-	private void updateUser(HttpServletRequest req, HttpServletResponse resp) {
-		String userName = req.getParameter("name");
-		String userGender = req.getParameter("gender");
-		String userEMail = req.getParameter("mail");
+	private void updateComprador(HttpServletRequest req, HttpServletResponse resp) {
+		String compradorName = req.getParameter("name");
+		String compradorAddress = req.getParameter("address");
+		String compradorEmail = req.getParameter("mail");
 		
-		User user = loadUser(req);
-		user.setName(userName);
-		user.setGender(userGender);
-		user.setEmail(userEMail);
+		Comprador comprador = loadComprador(req);
+		comprador.setName(compradorName);
+		comprador.setAddress(compradorAddress);
+		comprador.setEmail(compradorEmail);
 		
-		UserDAO dao = DAOFactory.createDAO(UserDAO.class);
+		CompradorDAO dao = DAOFactory.createDAO(CompradorDAO.class);
 		
 		try {
-			if (dao.update(user)) {
-				ControllerUtil.sucessMessage(req, "Usuário '" + user.getName() + "' atualizado com sucesso.");
+			if (dao.update(comprador)) {
+				ControllerUtil.sucessMessage(req, "Usuario '" + comprador.getName() + "' atualizado com sucesso.");
 			}
 			else {
-				ControllerUtil.errorMessage(req, "Usuário '" + user.getName() + "' não pode ser atualizado.");
+				ControllerUtil.errorMessage(req, "Usuario '" + comprador.getName() + "' n�o pode ser atualizado.");
 			}
 				
 		} catch (ModelException e) {
@@ -167,24 +169,24 @@ public class CompradorController extends HttpServlet{
 		}
 	}
 	
-	private void deleteUser(HttpServletRequest req, HttpServletResponse resp) {
-		String userIdParameter = req.getParameter("id");
+	private void deleteComprador(HttpServletRequest req, HttpServletResponse resp) {
+		String compradorIdParameter = req.getParameter("id");
 		
-		int userId = Integer.parseInt(userIdParameter);
+		int compradorId = Integer.parseInt(compradorIdParameter);
 		
-		UserDAO dao = DAOFactory.createDAO(UserDAO.class);
+		CompradorDAO dao = DAOFactory.createDAO(CompradorDAO.class);
 		
 		try {
-			User user = dao.findById(userId);
+			Comprador comprador = dao.findById(compradorId);
 			
-			if (user == null)
-				throw new ModelException("Usuário não encontrado para deleção.");
+			if (comprador == null)
+				throw new ModelException("Usuario n�o encontrado para dele��o.");
 			
-			if (dao.delete(user)) {
-				ControllerUtil.sucessMessage(req, "Usuário '" + user.getName() + "' deletado com sucesso.");
+			if (dao.delete(comprador)) {
+				ControllerUtil.sucessMessage(req, "Usuario '" + comprador.getName() + "' deletado com sucesso.");
 			}
 			else {
-				ControllerUtil.errorMessage(req, "Usuário '" + user.getName() + "' não pode ser deletado.");
+				ControllerUtil.errorMessage(req, "Usuario '" + comprador.getName() + "' n�o pode ser deletado.");
 			}
 		} catch (ModelException e) {
 			// log no servidor

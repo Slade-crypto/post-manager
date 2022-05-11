@@ -4,7 +4,7 @@ import java.util.List;
 
 import model.Comprador;
 import model.ModelException;
-import model.User;
+
 
 public interface CompradorDAO {
 	boolean save(Comprador comprador) throws ModelException ;

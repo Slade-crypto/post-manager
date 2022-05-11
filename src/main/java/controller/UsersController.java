@@ -127,10 +127,10 @@ public class UsersController extends HttpServlet{
 		
 		try {
 			if (dao.save(user)) {
-				ControllerUtil.sucessMessage(req, "Usuário '" + user.getName() + "' salvo com sucesso.");
+				ControllerUtil.sucessMessage(req, "Usuario '" + user.getName() + "' salvo com sucesso.");
 			}
 			else {
-				ControllerUtil.errorMessage(req, "Usuário '" + user.getName() + "' não pode ser salvo.");
+				ControllerUtil.errorMessage(req, "Usuário '" + user.getName() + "' n�o pode ser salvo.");
 			}
 				
 		} catch (ModelException e) {
