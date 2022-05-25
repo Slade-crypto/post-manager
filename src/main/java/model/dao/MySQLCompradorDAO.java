@@ -5,6 +5,7 @@ import java.util.List;
 
 import model.Comprador;
 import model.ModelException;
+import model.User;
 
 
 public class MySQLCompradorDAO implements CompradorDAO {
@@ -20,7 +21,7 @@ public class MySQLCompradorDAO implements CompradorDAO {
 		db.setString(1, comprador.getName());
 		db.setString(2, comprador.getAddress());
 		db.setString(3, comprador.getEmail());
-		db.setInt(4, 1);
+		db.setInt(4, comprador.getUser().getId());
 		  
 		return db.executeUpdate() > 0;
 	}
@@ -34,6 +35,7 @@ public class MySQLCompradorDAO implements CompradorDAO {
 				         	+ "SET nome = ?, "
 				         	+ "address = ?, "
 				         	+ "email = ? "
+				         	+ "user_id = ? "
 				         + "WHERE id = ?";
 		
 		
@@ -77,7 +79,14 @@ public class MySQLCompradorDAO implements CompradorDAO {
 		db.executeQuery(sqlQuery);
 
 		while (db.next()) {
-			Comprador u = createComprador(db);
+			Comprador  u = new Comprador(db.getInt("id"));
+			User user = new User(db.getInt("user_id"));
+			user.setName(db.getString("nome"));
+			
+			u.setName(db.getString("name"));
+			u.setAddress(db.getString("address"));
+			u.setEmail(db.getString("email"));;
+			u.setUser(user);
 			compradores.add(u);
 		}
 		
@@ -97,20 +106,20 @@ public class MySQLCompradorDAO implements CompradorDAO {
 		
 		Comprador u = null;
 		while (db.next()) {
-			u = createComprador(db);
+			
+			u = new Comprador(db.getInt("id"));
+			u.setName(db.getString("name"));
+			u.setAddress(db.getString("address"));
+			u.setEmail(db.getString("email"));
+			
+			UserDAO userDAO = DAOFactory.createDAO(UserDAO.class); 
+			User user = userDAO.findById(db.getInt("user_id"));
+			u.setUser(user);
+			
 			break;
 		}
 		
 		return u;
 	}
 	
-	private Comprador createComprador(DBHandler db) throws ModelException {
-		Comprador u = new Comprador(db.getInt("id"));
-		u.setName(db.getString("name"));
-		u.setAddress(db.getString("address"));
-		u.setEmail(db.getString("email"));
-		
-		return u;
-	}
-
 }

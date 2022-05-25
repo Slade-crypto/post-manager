@@ -10,9 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Comprador;
 import model.ModelException;
-
+import model.Post;
+import model.User;
 import model.dao.CompradorDAO;
 import model.dao.DAOFactory;
+import model.dao.PostDAO;
+import model.dao.UserDAO;
 
 
 @WebServlet(urlPatterns = {"/compradores", "/compradores/form", "/compradores/delete", "/compradores/insert", "/compradores/update"})
@@ -26,13 +29,13 @@ public class CompradorController extends HttpServlet{
 		
 		switch (action) {
 		case "/post-manager/compradores/form": {
-			listCompradores(req);
+			listUsers(req);
 			req.setAttribute("action", "insert");
 			ControllerUtil.forward(req, resp, "/form-comprador.jsp");
 			break;
 		}
 		case "/post-manager/compradores/update": {
-			listCompradores(req);
+			listUsers(req);
 			Comprador comprador = loadComprador(req);
 			req.setAttribute("comprador", comprador);
 			req.setAttribute("action", "update");
@@ -119,11 +122,13 @@ public class CompradorController extends HttpServlet{
 		String compradorName = req.getParameter("name");
 		String compradorAddress = req.getParameter("address");
 		String compradorEmail = req.getParameter("mail");
+		String userId = req.getParameter("user_id");
 		
 		Comprador comprador = new Comprador();
 		comprador.setName(compradorName);
 		comprador.setAddress(compradorAddress);
 		comprador.setEmail(compradorEmail);
+		comprador.setUser(new User(Integer.parseInt(userId)));
 		
 		CompradorDAO dao = DAOFactory.createDAO(CompradorDAO.class);
 		
@@ -193,5 +198,19 @@ public class CompradorController extends HttpServlet{
 			e.printStackTrace();
 			ControllerUtil.errorMessage(req, e.getMessage());
 		}
+	}
+	public static void listUsers(HttpServletRequest req) {
+		UserDAO dao = DAOFactory.createDAO(UserDAO.class);
+		
+		List<User> listUsers = null;
+		try {
+			listUsers = dao.listAll();
+		} catch (ModelException e) {
+			// Log no servidor
+			e.printStackTrace();
+		}
+		
+		if (listUsers != null)
+			req.setAttribute("users", listUsers);		
 	}
 }

@@ -46,6 +46,7 @@
 			                    <th>Nome</th>
 			                    <th>Endereço</th>
 			                    <th>E-mail</th>
+			                    <th>Vendedor</th>
 			                    <th>Editar</th>
 			                    <th>Excluir</th>
 			                 </tr>
@@ -55,17 +56,18 @@
 								<tr>
 				                    <td>${compradores.getName()}</td>
 				                    <td>${compradores.getAddress()}</td>
-				                    <td>${compradores.getEmail()}</td>				                    
+				                    <td>${compradores.getEmail()}</td>	
+				                    <td>${compradores.getUser().getName()}</td>			                    
 				                    <td class="actions">
 				                        <a class="btn btn-info btn-xs" 
-				                           href="${pageContext.request.contextPath}/compradores/update?compradoresId=${compradores.getId()}" >
+				                           href="${pageContext.request.contextPath}/compradores/update?compradorId=${compradores.getId()}" >
 				                           <span class="glyphicon glyphicon-edit"></span>
 				                        </a>
 				                    </td>
 				                    <td class="actions">
 				                        <a class="btn btn-danger btn-xs modal-remove"
-				                           compradores-id="${compradores.getId()}" 
-				                           compradores-name="${compradores.getName()}" data-toggle="modal" 
+				                           comprador-id="${compradores.getId()}" 
+				                           comprador-name="${compradores.getName()}" data-toggle="modal" 
 				                           data-target="#delete-modal"  href="#"><span 
 				                           class="glyphicon glyphicon-trash"></span></a>
 				                    </td>
@@ -106,7 +108,7 @@
 		            var compradorId = $(this).attr('comprador-id');
 		            $(".modal-body #hiddenValue").text("o comprador '"+compradorName+"'");
 		            $("#id").attr( "value", compradorId);
-		            $("#form").attr( "action","comprador/delete");
+		            $("#form").attr( "action","compradores/delete");
 		        })
 			});
 		</script>

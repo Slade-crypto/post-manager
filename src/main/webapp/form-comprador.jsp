@@ -40,6 +40,19 @@
 							   oninput="setCustomValidity('')"
 							   value="${comprador.getEmail()}">
 					</div>
+					<div class="form-group col-md-6">
+						<label for="user">Vendedor</label>
+						<select id="user" class="form-control selectpicker" name="user" 
+							    required oninvalid="this.setCustomValidity('Por favor, informe o usuário.')"
+							    oninput="setCustomValidity('')">
+						  <option value="" disabled ${not empty post ? "" : "selected"}>Selecione um vendedor</option>
+						  <c:forEach var="user" items="${users}">
+						  	<option value="${user.getId()}"  ${comprador.getUser().getId() == user.getId() ? "selected" : ""}>
+						  		${user.getName()}
+						  	</option>	
+						  </c:forEach>
+						</select>
+					</div>
 				</div>
 				<hr />
 				<div id="actions" class="row pull-right">
